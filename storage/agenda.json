@@ -1,0 +1,6 @@
+[
+  {"dia": "segunda", "data": "2025-06-09", "tipo": "aula", "materia": "Inteligência Artificial", "horario": "08:00", "local": "Sala 10"},
+  {"dia": "segunda", "data": "2025-06-09", "tipo": "aula", "materia": "Banco de Dados", "horario": "10:00", "local": "Sala 5"},
+  {"dia": "terca",   "data": "2025-06-10", "tipo": "prova", "materia": "Inteligência Artificial", "horario": "08:00", "local": "Sala 10"},
+  {"dia": "quarta",  "data": "2025-06-11", "tipo": "aula", "materia": "Engenharia de Software", "horario": "14:00", "local": "Lab 3"}
+]

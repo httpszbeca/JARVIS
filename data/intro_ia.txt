@@ -1,0 +1,11 @@
+Inteligência Artificial (IA) é a área da computação que estuda como criar sistemas capazes de realizar tarefas que normalmente requerem inteligência humana.
+
+Aprendizado de Máquina (Machine Learning) é um subcampo da IA onde sistemas aprendem padrões a partir de dados, sem serem explicitamente programados para cada tarefa.
+
+Redes Neurais Artificiais são modelos computacionais inspirados no cérebro humano, compostos por camadas de neurônios artificiais que processam informação.
+
+RAG (Retrieval-Augmented Generation) é uma técnica que combina busca em documentos com geração de texto por LLMs. O sistema primeiro recupera trechos relevantes e depois usa o LLM para gerar uma resposta baseada nesses trechos.
+
+Embeddings são representações numéricas (vetores) de textos que capturam seu significado semântico. Textos com significados similares têm embeddings próximos no espaço vetorial.
+
+Regressão Logística é um algoritmo de classificação que estima a probabilidade de uma instância pertencer a uma classe. Apesar do nome, é usada para classificação e não para regressão.
