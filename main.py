@@ -1,18 +1,16 @@
 import json
 import os
+import re
 import logging
-from datetime import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
 
 from tools.agenda import consultar_agenda
 from tools.tarefas import listar_tarefas, adicionar_tarefa, concluir_tarefa
-
 from tools.rag import buscar_material_rag
 
 load_dotenv()
 
-# Configuração do log
 os.makedirs("logs", exist_ok=True)
 logging.basicConfig(
     filename="logs/tool_calls.log",
@@ -20,134 +18,93 @@ logging.basicConfig(
     format="%(asctime)s | %(message)s"
 )
 
-# Cliente Gemma
 client = OpenAI(
     base_url=os.getenv("GEMMA_URL"),
     api_key=os.getenv("GEMMA_TOKEN")
 )
 
-# Descrição das ferramentas para o Gemma
-FERRAMENTAS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "consultar_agenda",
-            "description": "Consulta a agenda acadêmica do estudante. Use para perguntas sobre aulas, provas e eventos.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "dia": {
-                        "type": "string",
-                        "description": "Dia a consultar: 'hoje', 'amanha', nome do dia (ex: 'segunda') ou data (ex: '2025-06-10')"
-                    }
-                },
-                "required": []
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "listar_tarefas",
-            "description": "Lista todas as tarefas pendentes do estudante.",
-            "parameters": {"type": "object", "properties": {}, "required": []}
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "adicionar_tarefa",
-            "description": "Adiciona uma nova tarefa à lista do estudante.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "titulo": {"type": "string", "description": "Título da tarefa"},
-                    "prazo":  {"type": "string", "description": "Prazo no formato YYYY-MM-DD (opcional)"}
-                },
-                "required": ["titulo"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "concluir_tarefa",
-            "description": "Marca uma tarefa como concluída pelo ID.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "id_tarefa": {"type": "integer", "description": "ID numérico da tarefa"}
-                },
-                "required": ["id_tarefa"]
-            }
-        }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "buscar_material_rag",
-            "description": "Busca informações nos materiais de estudo do estudante (PDFs e textos). Use para perguntas sobre conteúdo acadêmico, conceitos, resumos e explicações.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "pergunta": {
-                        "type": "string",
-                        "description": "A pergunta ou tema a buscar nos materiais"
-                    }
-                },
-                "required": ["pergunta"]
-            }
-        }
-    }
-]
+DESCRICAO_FERRAMENTAS = """
+Você é o JARVIS, assistente acadêmico pessoal. Responda sempre em português brasileiro.
 
-# Mapa de nome -> função Python
+Você tem acesso às seguintes ferramentas. Quando precisar usar uma, responda APENAS com um bloco JSON nesse formato exato, sem mais nada:
+{"tool": "nome_da_ferramenta", "args": {"parametro": "valor"}}
+
+Ferramentas disponíveis:
+
+1. consultar_agenda
+   - Uso: quando perguntarem sobre aulas, provas ou eventos
+   - Args: {"dia": "hoje" | "amanha" | "segunda" | "2025-06-10"}
+
+2. listar_tarefas
+   - Uso: quando perguntarem sobre tarefas pendentes
+   - Args: {}
+
+3. adicionar_tarefa
+   - Uso: quando pedirem para adicionar/criar uma tarefa
+   - Args: {"titulo": "texto da tarefa", "prazo": "2025-06-10"} (prazo é opcional)
+
+4. concluir_tarefa
+   - Uso: quando pedirem para marcar tarefa como feita/concluída
+   - Args: {"id_tarefa": 1}
+
+5. buscar_material_rag
+   - Uso: quando perguntarem sobre conteúdo acadêmico, conceitos, matérias, resumos
+   - Args: {"pergunta": "o que o usuário quer saber"}
+
+Se a pergunta não precisar de ferramenta, responda normalmente em texto.
+"""
+
 MAPA_FERRAMENTAS = {
-    "consultar_agenda": consultar_agenda,
-    "listar_tarefas":   listar_tarefas,
-    "adicionar_tarefa": adicionar_tarefa,
-    "concluir_tarefa":  concluir_tarefa,
-    "buscar_material_rag": buscar_material_rag,
+    "consultar_agenda":   lambda args: consultar_agenda(**args),
+    "listar_tarefas":     lambda args: listar_tarefas(**args),
+    "adicionar_tarefa":   lambda args: adicionar_tarefa(**args),
+    "concluir_tarefa":    lambda args: concluir_tarefa(**args),
+    "buscar_material_rag": lambda args: buscar_material_rag(**args),
 }
 
-def executar_ferramenta(nome: str, argumentos: dict) -> str:
-    """Executa a ferramenta e registra no log."""
+def extrair_tool_call(texto: str):
+    """Tenta extrair um JSON de tool call da resposta do modelo."""
+    match = re.search(r'\{.*"tool".*\}', texto, re.DOTALL)
+    if match:
+        try:
+            return json.loads(match.group())
+        except json.JSONDecodeError:
+            return None
+    return None
+
+def executar_ferramenta(nome: str, args: dict) -> str:
     func = MAPA_FERRAMENTAS.get(nome)
     if not func:
         return f"Ferramenta '{nome}' não encontrada."
-    resultado = func(**argumentos)
-    logging.info(f"FERRAMENTA: {nome} | ARGS: {argumentos} | RESULTADO: {resultado}")
+    resultado = func(args)
+    logging.info(f"FERRAMENTA: {nome} | ARGS: {args} | RESULTADO: {resultado}")
     return resultado
 
 def chat(historico: list, pergunta: str) -> str:
-    """Envia a pergunta ao Gemma e executa ferramentas se necessário."""
     historico.append({"role": "user", "content": pergunta})
 
+    # Primeira chamada: o modelo decide se usa ferramenta ou responde direto
     resposta = client.chat.completions.create(
         model="google/gemma-3-12b-it",
-        messages=historico,
-        tools=FERRAMENTAS,
-        tool_choice="auto"
+        messages=historico
     )
+    texto = resposta.choices[0].message.content
 
-    mensagem = resposta.choices[0].message
+    # Verifica se o modelo quer chamar uma ferramenta
+    tool_call = extrair_tool_call(texto)
 
-    # O modelo quer chamar uma ferramenta?
-    if mensagem.tool_calls:
-        historico.append(mensagem)
+    if tool_call:
+        nome = tool_call.get("tool")
+        args = tool_call.get("args", {})
+        resultado = executar_ferramenta(nome, args)
 
-        for tool_call in mensagem.tool_calls:
-            nome = tool_call.function.name
-            args = json.loads(tool_call.function.arguments)
-            resultado = executar_ferramenta(nome, args)
+        # Segunda chamada: modelo formula resposta com o resultado da ferramenta
+        historico.append({"role": "assistant", "content": texto})
+        historico.append({
+            "role": "user",
+            "content": f"[Resultado da ferramenta {nome}]: {resultado}\n\nAgora responda ao usuário em português com base nesse resultado."
+        })
 
-            historico.append({
-                "role": "tool",
-                "tool_call_id": tool_call.id,
-                "content": resultado
-            })
-
-        # Pede ao Gemma para formular a resposta final com o resultado
         resposta_final = client.chat.completions.create(
             model="google/gemma-3-12b-it",
             messages=historico
@@ -157,26 +114,16 @@ def chat(historico: list, pergunta: str) -> str:
         return resposta_texto
 
     # Respondeu direto, sem ferramenta
-    resposta_texto = mensagem.content
-    historico.append({"role": "assistant", "content": resposta_texto})
-    return resposta_texto
+    historico.append({"role": "assistant", "content": texto})
+    return texto
 
 def main():
     print("=" * 50)
     print("   JARVIS Acadêmico — digite 'sair' para encerrar")
     print("=" * 50)
 
-    sistema = {
-        "role": "system",
-        "content": (
-            "Você é o JARVIS, um assistente acadêmico pessoal. "
-            "Ajude o estudante com sua agenda, tarefas e materiais de estudo. "
-            "Responda sempre em português brasileiro de forma clara e objetiva. "
-            "Use as ferramentas disponíveis sempre que a pergunta envolver agenda ou tarefas."
-        )
-    }
-    historico = [sistema]
-    
+    historico = [{"role": "system", "content": DESCRICAO_FERRAMENTAS}]
+
     print("Carregando materiais de estudo...")
     from rag.pipeline import carregar_documentos
     carregar_documentos()
@@ -189,7 +136,6 @@ def main():
             break
         if not pergunta:
             continue
-
         try:
             resposta = chat(historico, pergunta)
             print(f"\nJARVIS: {resposta}")

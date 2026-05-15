@@ -1,5 +1,26 @@
 [
-  {"id": 1, "titulo": "Implementar RAG do JARVIS", "concluida": false, "prazo": "2025-06-15"},
-  {"id": 2, "titulo": "Montar dataset com 10 documentos", "concluida": false, "prazo": "2025-06-15"},
-  {"id": 3, "titulo": "Estudar para prova de IA", "concluida": false, "prazo": "2025-06-10"}
+  {
+    "id": 1,
+    "titulo": "Implementar RAG do JARVIS",
+    "concluida": true,
+    "prazo": "2025-06-15"
+  },
+  {
+    "id": 2,
+    "titulo": "Montar dataset com 10 documentos",
+    "concluida": false,
+    "prazo": "2025-06-15"
+  },
+  {
+    "id": 3,
+    "titulo": "Estudar para prova de IA",
+    "concluida": false,
+    "prazo": "2025-06-10"
+  },
+  {
+    "id": 4,
+    "titulo": "revisar conteúdo de redes",
+    "concluida": false,
+    "prazo": "2025-06-12"
+  }
 ]
