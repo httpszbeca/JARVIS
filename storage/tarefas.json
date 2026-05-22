@@ -22,5 +22,11 @@
     "titulo": "revisar conteúdo de redes",
     "concluida": false,
     "prazo": "2025-06-12"
+  },
+  {
+    "id": 5,
+    "titulo": "Tarefa de teste automatizado",
+    "concluida": false,
+    "prazo": "2025-12-31"
   }
 ]

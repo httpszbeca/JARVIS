@@ -7,9 +7,9 @@ load_dotenv()
 print("✓ .env carregado, token:", os.getenv("GEMMA_TOKEN")[:8] + "...")
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
-print("✓ Modelo de embeddings carregado")
+print("Modelo de embeddings carregado")
 
 client = chromadb.Client()
-print("✓ ChromaDB funcionando")
+print("ChromaDB funcionando")
 
-print("\nTudo pronto! Pode começar a codar o JARVIS.")
+print("\nTudo pronto!")

@@ -4,7 +4,7 @@ Assistente pessoal acadêmico desenvolvido com RAG, Tool Calling e LLM (Gemma 3 
 
 ## Funcionalidades (Trabalho 1)
 
-- **3.1 RAG** — Consulta a materiais de estudo (PDFs e textos)
+- **3.1 RAG** — Consulta a materiais de estudo 
 - **3.2 Agenda** — Consulta de aulas, provas e eventos
 - **3.3 Tarefas** — Adicionar, listar e concluir tarefas
 
@@ -22,8 +22,8 @@ Assistente pessoal acadêmico desenvolvido com RAG, Tool Calling e LLM (Gemma 3 
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/jarvis-academico.git
-cd jarvis-academico
+git clone https://github.com/httpszbeca/JARVIS.git
+cd JARVIS
 
 # 2. Crie e ative o ambiente virtual
 python -m venv venv
@@ -34,7 +34,6 @@ pip install -r requirements.txt
 
 # 4. Configure o .env
 cp .env.example .env
-# Edite o .env com seu token
 ```
 
 ## Configuração
@@ -71,7 +70,7 @@ Os documentos estão na pasta `/data` e incluem:
 
 ## IAs utilizadas no desenvolvimento
 
-- Claude (Anthropic) — arquitetura, geração de código e depuração
+- Claude — arquitetura, geração de código e depuração
 
 ## Estrutura do projeto
 
