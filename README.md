@@ -74,6 +74,7 @@ Os documentos estão na pasta `/data` e incluem:
 
 ## Estrutura do projeto
 
+```
 jarvis-academico/
 ├── main.py              # Orquestrador principal
 ├── tools/
@@ -89,6 +90,5 @@ jarvis-academico/
 ├── data/                # Documentos do dataset
 ├── logs/                # Logs de tool calling
 └── .env                 # Credenciais (não vai ao GitHub)
-
-
+```
 
