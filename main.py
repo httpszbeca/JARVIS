@@ -63,7 +63,6 @@ MAPA_FERRAMENTAS = {
 }
 
 def extrair_tool_call(texto: str):
-    """Tenta extrair um JSON de tool call da resposta do modelo."""
     match = re.search(r'\{.*"tool".*\}', texto, re.DOTALL)
     if match:
         try:

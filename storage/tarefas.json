@@ -14,7 +14,7 @@
   {
     "id": 3,
     "titulo": "Estudar para prova de IA",
-    "concluida": false,
+    "concluida": true,
     "prazo": "2025-06-10"
   },
   {
@@ -26,7 +26,19 @@
   {
     "id": 5,
     "titulo": "Tarefa de teste automatizado",
-    "concluida": false,
+    "concluida": true,
     "prazo": "2025-12-31"
+  },
+  {
+    "id": 6,
+    "titulo": "gravar video do trabalho 1 de IA",
+    "concluida": false,
+    "prazo": null
+  },
+  {
+    "id": 7,
+    "titulo": "revisar conteudo de gerencia de projetos",
+    "concluida": false,
+    "prazo": "2026-07-23"
   }
 ]

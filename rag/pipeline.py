@@ -24,7 +24,6 @@ def ler_txt(caminho: str) -> str:
         return f.read()
 
 def chunk_texto(texto: str, tamanho: int = 500, sobreposicao: int = 100) -> list:
-    """Divide o texto em pedaços com sobreposição."""
     chunks = []
     inicio = 0
     while inicio < len(texto):
@@ -34,7 +33,6 @@ def chunk_texto(texto: str, tamanho: int = 500, sobreposicao: int = 100) -> list
     return chunks
 
 def carregar_documentos():
-    """Lê todos os arquivos de /data e indexa no ChromaDB."""
     arquivos = os.listdir(DADOS_PATH)
     total_chunks = 0
 
@@ -65,7 +63,6 @@ def carregar_documentos():
     print(f"\nTotal indexado: {total_chunks} chunks de {len(arquivos)} arquivo(s)")
 
 def buscar(pergunta: str, n_resultados: int = 3) -> str:
-    """Busca os chunks mais relevantes para a pergunta."""
     embedding_pergunta = modelo.encode([pergunta]).tolist()
 
     resultados = colecao.query(
