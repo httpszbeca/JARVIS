@@ -50,7 +50,7 @@ cp .env.example .env
 ## Configuração
 
 Crie um arquivo `.env` na raiz com:
-GEMMA_TOKEN=seu_token_aqui
+GEMMA_TOKEN=REIkURcI7rTTqsTwlJi8MrgnKFwOiqky7Ezh7hH-l-k
 GEMMA_URL=https://llm.liaufms.org/v1/qwen2-5-14b-instruct-awq
 
 ## Como usar
