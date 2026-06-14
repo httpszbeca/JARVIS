@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from tools.agenda import consultar_agenda
 from tools.tarefas import listar_tarefas, adicionar_tarefa, concluir_tarefa
 from tools.rag import buscar_material_rag
+from tools.planejamento import planejar_estudos
+from tools.aprendizado import gerar_exercicios, iniciar_active_recall, avaliar_resposta
 
 load_dotenv()
 
@@ -51,6 +53,22 @@ Ferramentas disponíveis:
    - Uso: quando perguntarem sobre conteúdo acadêmico, conceitos, matérias, resumos
    - Args: {"pergunta": "o que o usuário quer saber"}
 
+6. planejar_estudos
+   - Uso: quando pedirem plano de estudos, prioridades do dia, o que estudar
+   - Args: {"foco": "tema opcional, ex: redes, prova de GCS"}
+
+7. gerar_exercicios
+   - Uso: quando pedirem exercícios, questões, perguntas sobre um tema
+   - Args: {"tema": "tema a ser explorado"}
+
+8. iniciar_active_recall
+   - Uso: quando o usuário quiser ser testado, treinar memorização ou praticar
+   - Args: {"tema": "tema para o teste"}
+
+9. avaliar_resposta
+   - Uso: quando o usuário responder uma pergunta de active recall
+   - Args: {"resposta_usuario": "o que o usuário respondeu", "tema": "tema da pergunta"}
+
 Se a pergunta não precisar de ferramenta, responda normalmente em texto.
 """
 
@@ -60,6 +78,10 @@ MAPA_FERRAMENTAS = {
     "adicionar_tarefa":   lambda args: adicionar_tarefa(**args),
     "concluir_tarefa":    lambda args: concluir_tarefa(**args),
     "buscar_material_rag": lambda args: buscar_material_rag(**args),
+    "planejar_estudos":    lambda args: planejar_estudos(**args),
+    "gerar_exercicios":    lambda args: gerar_exercicios(**args),
+    "iniciar_active_recall": lambda args: iniciar_active_recall(**args),
+    "avaliar_resposta":    lambda args: avaliar_resposta(**args),
 }
 
 def extrair_tool_call(texto: str):
@@ -84,7 +106,7 @@ def chat(historico: list, pergunta: str) -> str:
 
     # Primeira chamada: o modelo decide se usa ferramenta ou responde direto
     resposta = client.chat.completions.create(
-        model="google/gemma-3-12b-it",
+        model="Qwen/Qwen2.5-14B-Instruct-AWQ",
         messages=historico
     )
     texto = resposta.choices[0].message.content
@@ -105,7 +127,7 @@ def chat(historico: list, pergunta: str) -> str:
         })
 
         resposta_final = client.chat.completions.create(
-            model="google/gemma-3-12b-it",
+            model="Qwen/Qwen2.5-14B-Instruct-AWQ",
             messages=historico
         )
         resposta_texto = resposta_final.choices[0].message.content
