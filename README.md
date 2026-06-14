@@ -92,3 +92,17 @@ jarvis-academico/
 └── .env                 # Credenciais (não vai ao GitHub)
 ```
 
+## Funcionalidades (Trabalho 2)
+
+- **3.4 Planejamento** — Combina agenda, tarefas e materiais para montar plano de estudos
+- **Geração de exercícios** — Cria questões de múltipla escolha baseadas nos PDFs
+- **Active Recall interativo** — Sistema pergunta, usuário responde, modelo avalia
+
+## Ferramentas adicionais (Trabalho 2)
+
+| Ferramenta | Descrição |
+|---|---|
+| `planejar_estudos` | Combina agenda + tarefas + RAG para sugerir prioridades |
+| `gerar_exercicios` | Gera questões de múltipla escolha sobre um tema |
+| `iniciar_active_recall` | Faz uma pergunta ao usuário para testar conhecimento |
+| `avaliar_resposta` | Avalia a resposta do usuário com base no material |
