@@ -102,7 +102,7 @@ Os documentos estão na pasta `/data` e totalizam 10 arquivos com 354 chunks ind
 
 ## IAs utilizadas no desenvolvimento
 
-- Claude (Anthropic) — arquitetura e geração de código
+- Claude (Anthropic) 
 
 ## Estrutura do projeto
 jarvis-academico/
